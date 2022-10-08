@@ -59,21 +59,21 @@ class NMUc {
                     if (type.startsWith("embed:")) {
                         ret.push({type:"embed",text:type.slice(6),content:content});
                     }
-                    if (type.startsWith("code:")) {
-                        ret.push({type:"cblock",text:type.slice(5),content:content});
-                    }
                     if (type.startsWith("code:\n")) {
-                        ret.push({type:"cblock",text:type,content:content});
+                        ret.push({type:"cblock",text:"",content:content});
+                    }
+                    else if (type.startsWith("code:")) {
+                        ret.push({type:"cblock",text:type.slice(5),content:content});
                     }
                 }
             }
             else {
                 i++;
-                if (t[i-1]=="\\"&&(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) {
+                if (t[i-1]=="\\"&&(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) {
                     i++;
                 }
                 i--;
-                if (!(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) {
+                if (!(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) {
                     nstxt+=t[i];
                 }
                 i++;
