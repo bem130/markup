@@ -17,22 +17,22 @@ you should use embed blocks to show images
 #3 title3
 #4 title4
 
-```
+{{code
 code block
-```
+}}
 
-```type
+{{code:type
 code block
-```
+}}
 
-```embed-type
+{{embed:type
 embed content
-```
+}}
 
 text
 [url]
 [text](url)
-`inline code`
+{:inline code}
 (:text,alias,)
 
 ````

@@ -9,7 +9,7 @@ class NMUc {
         let ret = [];
         let nstxt = "";
         while (t.length>i) {
-            if (t[i-1]!="\\"&&(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) { // structure
+            if (t[i-1]!="\\"&&(t[i]=="#"||t[i]=="{"&&t[i+1]=="{")) { // structure
                 if (nstxt.length>0) {
                     ret.push({type:"body",child:this.P_block(nstxt)});
                     nstxt = "";
@@ -35,8 +35,8 @@ class NMUc {
                         ret.push({type:"title",size:size,text:content});
                     }
                 }
-                else if (t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`") { // block
-                    i+=3;
+                else if (t[i]=="{"&&t[i+1]=="{") { // block
+                    i+=2;
                     let type = "";
                     while (t[i]!="\n"&&t.length>i) {
                         type += t[i];
@@ -45,18 +45,21 @@ class NMUc {
                     i++;
                     let content = "";
                     while (t.length>i) {
-                        if (t[i]=="\n"&&t[i+1]=="`"&&t[i+2]=="`"&&t[i+3]=="`") {i+=4;break;}
+                        if (t[i]=="\n"&&t[i+1]=="}"&&t[i+2]=="}") {i+=3;break;}
                         i++;
                         content += t[i-1];
-                        if (t[i]=="\n"&&t[i+1]=="\\"&&t[i+2]=="`"&&t[i+3]=="`"&&t[i+4]=="`") {
+                        if (t[i]=="\n"&&t[i+1]=="\\"&&t[i+2]=="}"&&t[i+3]=="}") {
                             i+=2;
                             content += "\n";
                         }
                     }
-                    if (type.startsWith("embed-")) {
+                    if (type.startsWith("embed:")) {
                         ret.push({type:"embed",btype:type.slice(6),content:content});
                     }
-                    else {
+                    if (type.startsWith("code:")) {
+                        ret.push({type:"cblock",btype:type.slice(5),content:content});
+                    }
+                    if (type.startsWith("code:\n")) {
                         ret.push({type:"cblock",btype:type,content:content});
                     }
                 }
@@ -91,7 +94,7 @@ class NMUc {
         let nstxt = "";
         let cblk = [];
         while (t.length>i) {
-            if (t[i]=="["||t[i]=="`"||(t[i]=="("&&t[i+1]==":")) { // structure
+            if (t[i]=="["||((t[i]=="{"||t[i]=="(")&&t[i+1]==":")) { // structure
                 if (nstxt.length>0) {
                     cblk.push({type:"text",text:nstxt});
                     nstxt = "";
@@ -115,10 +118,10 @@ class NMUc {
                         cblk.push({type:"link",text:t1,ref:t2})
                     }
                 }
-                if (t[i]=="`") { // link
+                if (t[i]=="{"&&t[i+1]==":") { // inline
                     let t1 = "";
-                    i++;
-                    while (t[i]!="`"&&t.length>i) {
+                    i+=2;
+                    while (t[i]!="}"&&t.length>i) {
                         t1 += t[i];
                         i++;
                     }
@@ -141,7 +144,6 @@ class NMUc {
                     if (t[i-1]!=",") {
                         names.push(t1);
                     }
-                    i++;
                     cblk.push({type:"alias",text:names[0],alias:names})
                 }
             }
@@ -260,6 +262,7 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
+                    telm.classList.add(t[cnt].btype)
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;
@@ -267,6 +270,7 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
+                    telm.classList.add(t[cnt].btype)
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;

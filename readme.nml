@@ -9,7 +9,7 @@ there is some point that i don't like in many lightweight-markup languages
 it isn't supporting non-text contents such as image
 you should use embed blocks to show images
 #1 representations
-```nm
+{{code:nml
 # title
 
 #1 title1
@@ -17,22 +17,21 @@ you should use embed blocks to show images
 #3 title3
 #4 title4
 
-\```
+{{code
 code block
-\```
+\}}
 
-\```type
+{{code:type
 code block
-\```
+\}}
 
-\```embed-type
+{{embed:type
 embed content
-\```
+\}}
 
 text
 [url]
 [text](url)
-`inline code`
+{:inline code}
 (:text,alias,)
-
-```
+}}
