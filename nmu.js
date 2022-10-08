@@ -80,8 +80,12 @@ class NMUc {
         return ret;
     }
     P_block(block) {
-        // console.log("child--")
-        // console.log(block)
+        if (block[0]=="\n") {
+            block = block.slice(1);
+        }
+        if (block[block.length-1]=="\n") {
+            block = block.slice(0,block.length-1);
+        }
         let i = 0;
         let t = block;
         let nstxt = "";
