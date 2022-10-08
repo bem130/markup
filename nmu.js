@@ -112,7 +112,6 @@ class NMUc {
                             t2 += t[i];
                             i++;
                         }
-                        i++;
                         cblk.push({type:"link",text:t1,ref:t2})
                     }
                 }
