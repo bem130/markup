@@ -9,7 +9,7 @@ class NMUc {
         let ret = [];
         let nstxt = "";
         while (t.length>i) {
-            if (t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`")) { // structure
+            if (t[i-1]!="\\"&&(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) { // structure
                 if (nstxt.length>0) {
                     ret.push({type:"body",child:this.P_block(nstxt)});
                     nstxt = "";
@@ -45,9 +45,13 @@ class NMUc {
                     i++;
                     let content = "";
                     while (t.length>i) {
-                        if ((t[i]=="\n"&&t[i+1]=="`"&&t[i+2]=="`"&&t[i+3]=="`")) {i+=4;break;}
-                        content += t[i];
+                        if (t[i]=="\n"&&t[i+1]=="`"&&t[i+2]=="`"&&t[i+3]=="`") {i+=4;break;}
                         i++;
+                        if (t[i]=="\n"&&t[i+1]=="\\"&&t[i+2]=="`"&&t[i+3]=="`"&&t[i+4]=="`") {
+                            i+=3;
+                            content += "\n";
+                        }
+                        content += t[i-1];
                     }
                     if (type.startsWith("embed-")) {
                         ret.push({type:"embed",btype:type.slice(6),content:content});
@@ -58,9 +62,16 @@ class NMUc {
                 }
             }
             else {
-                nstxt+=t[i];
+                i++;
+                if (t[i-1]=="\\"&&(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) {
+                    i++;
+                }
+                i--;
+                if (!(t[i]=="#"||(t[i]=="`"&&t[i+1]=="`"&&t[i+2]=="`"))) {
+                    nstxt+=t[i];
+                }
+                i++;
             }
-            i++;
         }
         if (nstxt.length>0) {
             ret.push({type:"body",child:this.P_block(nstxt)});
