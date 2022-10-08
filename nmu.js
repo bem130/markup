@@ -1,6 +1,7 @@
 class NMUc {
     constructor (text="") {
         this.text = text;
+        this.parse = this.P_parse(text);
     }
     P_parse(text) {
         let t = text;
@@ -138,8 +139,61 @@ class NMUc {
             cblk.push({type:"text",text:nstxt});
             nstxt = "";
         }
-        console.log(cblk)
         return cblk;
+    }
+    getTXT() {
+        let ret = "";
+        let t = this.parse;
+        for (let cnt=0;cnt<t.length;cnt++) {
+            switch (t[cnt].type) {
+                case "body":
+                    for (let cbt=0;cbt<t[cnt].child.length;cbt++) {
+                        let bcc = t[cnt].child[cbt];
+                        switch (bcc.type) {
+                            case "text":
+                                ret += bcc.text;
+                            break;
+                            case "alias":
+                                ret += bcc.text;
+                            break;
+                            case "link":
+                                ret += bcc.text;
+                            break;
+                            case "inline":
+                                ret += bcc.text;
+                            break;
+                        }
+                    }
+                break;
+                case "dtitle":
+                    ret += "*** ";
+                    ret += t[cnt].text;
+                    ret += " ***\n";
+                break;
+                case "title":
+                    let st = "";
+                    let sp = "";
+                    for (let i=0;i<t[cnt].size-1;i++) {
+                        sp+=" ";
+                    }
+                    for (let i=5;i>=t[cnt].size;i--) {
+                        st+="-";
+                    }
+                    ret += sp;
+                    ret += st;
+                    ret += " ";
+                    ret += t[cnt].text;
+                    ret += "\n";
+                break;
+                case "cblock":
+                    ret += t[cnt].content;
+                break;
+                case "embed":
+                    ret += t[cnt].content;
+                break;
+            }
+        }
+        return ret;
     }
     getHTML() {
     }
@@ -147,7 +201,9 @@ class NMUc {
 
 
 // test
-let rt = new NMUc("# Hello World\ntext\ntext\n\ntext[https://example.com/]a(:aiu,AIU,あいう))[hello](https://example.com)`hello`\n\n#1 txt-codeblock\n```txt\nhello\n```\n\n#2txt-embed\n```embed-txt\nhello\n```");
+let rt = new NMUc("# Hello World\ntext\ntext\n\ntext[https://example.com/]a(:aiu,AIU,あいう))[hello](https://example.com)`hello`\n\n#1 txt-codeblock\nfwae\n```txt\nhello\n```\n\n#2txt-embed\n```embed-txt\nhello\n```");
+console.log("----------------------------------------------\n\n");
 console.log(rt.text);
-console.log("---- ----");
-console.log(rt.P_parse(rt.text));
+console.log("\n\n----------------------------------------------\n\n");
+console.log(rt.getTXT());
+console.log("\n\n----------------------------------------------");
