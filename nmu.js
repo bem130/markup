@@ -47,11 +47,11 @@ class NMUc {
                     while (t.length>i) {
                         if (t[i]=="\n"&&t[i+1]=="`"&&t[i+2]=="`"&&t[i+3]=="`") {i+=4;break;}
                         i++;
+                        content += t[i-1];
                         if (t[i]=="\n"&&t[i+1]=="\\"&&t[i+2]=="`"&&t[i+3]=="`"&&t[i+4]=="`") {
                             i+=3;
                             content += "\n";
                         }
-                        content += t[i-1];
                     }
                     if (type.startsWith("embed-")) {
                         ret.push({type:"embed",btype:type.slice(6),content:content});
