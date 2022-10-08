@@ -127,6 +127,7 @@ class NMUc {
                     if (t[i-1]!=",") {
                         names.push(t1);
                     }
+                    i++;
                     cblk.push({type:"alias",text:names[0],alias:names})
                 }
             }
@@ -196,14 +197,70 @@ class NMUc {
         return ret;
     }
     getHTML() {
+        let ret = document.createElement("div");
+        let t = this.parse;
+        let telm;
+        for (let cnt=0;cnt<t.length;cnt++) {
+            switch (t[cnt].type) {
+                case "body":
+                    for (let cbt=0;cbt<t[cnt].child.length;cbt++) {
+                        let bcc = t[cnt].child[cbt];
+                        switch (bcc.type) {
+                            case "text":
+                                telm = document.createElement("span");
+                                telm.innerText = bcc.text
+                                ret.appendChild(telm);
+                            break;
+                            case "alias":
+                                telm = document.createElement("span");
+                                telm.innerText = bcc.text
+                                ret.appendChild(telm);
+                            break;
+                            case "link":
+                                telm = document.createElement("span");
+                                telm.innerText = bcc.text
+                                ret.appendChild(telm);
+                            break;
+                            case "inline":
+                                telm = document.createElement("span");
+                                telm.innerText = bcc.text
+                                ret.appendChild(telm);
+                            break;
+                        }
+                    }
+                break;
+                case "dtitle":
+                    telm = document.createElement("span");
+                    telm.innerText += "*** "
+                    telm.innerText += t[cnt].text
+                    telm.innerText += " ***\n"
+                    ret.appendChild(telm);
+                break;
+                case "title":
+                    let st = "";
+                    let sp = "";
+                    for (let i=0;i<t[cnt].size-1;i++) {
+                        sp+=" ";
+                    }
+                    for (let i=5;i>=t[cnt].size;i--) {
+                        st+="-";
+                    }
+                    telm = document.createElement("span");
+                    telm.innerText += sp
+                    telm.innerText += st
+                    telm.innerText += " "
+                    telm.innerText += t[cnt].text
+                    telm.innerText += "\n"
+                    ret.appendChild(telm);
+                break;
+                // case "cblock":
+                //     ret += t[cnt].content;
+                // break;
+                // case "embed":
+                //     ret += t[cnt].content;
+                // break;
+            }
+        }
+        return ret;
     }
 }
-
-
-// test
-let rt = new NMUc("# Hello World\ntext\ntext\n\ntext[https://example.com/]a(:aiu,AIU,あいう))[hello](https://example.com)`hello`\n\n#1 txt-codeblock\nfwae\n```txt\nhello\n```\n\n#2txt-embed\n```embed-txt\nhello\n```");
-console.log("----------------------------------------------\n\n");
-console.log(rt.text);
-console.log("\n\n----------------------------------------------\n\n");
-console.log(rt.getTXT());
-console.log("\n\n----------------------------------------------");

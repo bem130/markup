@@ -12,4 +12,13 @@
 // let rt = new NMUc("Hello World");
 // rt.parse(rt.text);
 
+// test
+let rt = new NMUc("# Hello World\ntext\ntext\n\ntext[https://example.com/]a(:aiu,AIU,あいう))[hello](https://example.com)`hello`\n\n#1 txt-codeblock\nfwae\n```txt\nhello\n```\n\n#2txt-embed\n```embed-txt\nhello\n```");
+console.log("----------------------------------------------\n\n");
+console.log(rt.text);
+console.log("\n\n----------------------------------------------\n\n");
+console.log(rt.getTXT());
+console.log("\n\n----------------------------------------------");
+document.getElementsByTagName("body")[0].appendChild(rt.getHTML())
+
 </script>
