@@ -54,13 +54,13 @@ class NMUc {
                         }
                     }
                     if (type.startsWith("embed:")) {
-                        ret.push({type:"embed",btype:type.slice(6),content:content});
+                        ret.push({type:"embed",text:type.slice(6),content:content});
                     }
                     if (type.startsWith("code:")) {
-                        ret.push({type:"cblock",btype:type.slice(5),content:content});
+                        ret.push({type:"cblock",text:type.slice(5),content:content});
                     }
                     if (type.startsWith("code:\n")) {
-                        ret.push({type:"cblock",btype:type,content:content});
+                        ret.push({type:"cblock",text:type,content:content});
                     }
                 }
             }
@@ -108,14 +108,14 @@ class NMUc {
                         i++;
                     }
                     i++;
-                    if (t[i]!="(") {i--;cblk.push({type:"link",text:t1,ref:t1})}
+                    if (t[i]!="(") {i--;cblk.push({type:"link",text:t1,content:t1})}
                     else {
                         i++;
                         while (t[i]!=")"&&t.length>i) {
                             t2 += t[i];
                             i++;
                         }
-                        cblk.push({type:"link",text:t1,ref:t2})
+                        cblk.push({type:"link",text:t1,content:t2})
                     }
                 }
                 if (t[i]=="{"&&t[i+1]==":") { // inline
@@ -237,7 +237,7 @@ class NMUc {
                             case "link":
                                 telm = document.createElement("a");
                                 telm.innerText = bcc.text;
-                                telm.href = bcc.ref;
+                                telm.href = bcc.content;
                                 ret.appendChild(telm);
                             break;
                             case "inline":
@@ -262,7 +262,7 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].btype)
+                    telm.classList.add(t[cnt].text)
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;
@@ -270,7 +270,7 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].btype)
+                    telm.classList.add(t[cnt].text)
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;
