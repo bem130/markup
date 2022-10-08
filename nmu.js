@@ -200,6 +200,7 @@ class NMUc {
         let ret = document.createElement("div");
         let t = this.parse;
         let telm;
+        let tpelm;
         for (let cnt=0;cnt<t.length;cnt++) {
             switch (t[cnt].type) {
                 case "body":
@@ -208,59 +209,60 @@ class NMUc {
                         switch (bcc.type) {
                             case "text":
                                 telm = document.createElement("span");
-                                telm.innerText = bcc.text
+                                telm.innerText = bcc.text;
                                 ret.appendChild(telm);
                             break;
                             case "alias":
                                 telm = document.createElement("span");
-                                telm.innerText = bcc.text
+                                telm.innerText = bcc.text;
+                                telm.title = bcc.alias.join(",");
                                 ret.appendChild(telm);
                             break;
                             case "link":
-                                telm = document.createElement("span");
-                                telm.innerText = bcc.text
+                                telm = document.createElement("a");
+                                telm.innerText = bcc.text;
+                                telm.href = bcc.ref;
                                 ret.appendChild(telm);
                             break;
                             case "inline":
-                                telm = document.createElement("span");
-                                telm.innerText = bcc.text
+                                telm = document.createElement("code");
+                                telm.innerText = bcc.text;
                                 ret.appendChild(telm);
                             break;
                         }
                     }
                 break;
                 case "dtitle":
-                    telm = document.createElement("span");
-                    telm.innerText += "*** "
-                    telm.innerText += t[cnt].text
-                    telm.innerText += " ***\n"
+                    telm = document.createElement("h1");
+                    telm.innerText += t[cnt].text;
                     ret.appendChild(telm);
                 break;
                 case "title":
-                    let st = "";
-                    let sp = "";
-                    for (let i=0;i<t[cnt].size-1;i++) {
-                        sp+=" ";
-                    }
-                    for (let i=5;i>=t[cnt].size;i--) {
-                        st+="-";
-                    }
-                    telm = document.createElement("span");
-                    telm.innerText += sp
-                    telm.innerText += st
-                    telm.innerText += " "
-                    telm.innerText += t[cnt].text
-                    telm.innerText += "\n"
+                    telm = document.createElement("h"+(1+t[cnt].size));
+                    telm.innerText += t[cnt].text;
                     ret.appendChild(telm);
                 break;
-                // case "cblock":
-                //     ret += t[cnt].content;
-                // break;
-                // case "embed":
-                //     ret += t[cnt].content;
-                // break;
+                case "cblock":
+                    tpelm = document.createElement("pre");
+                    telm = document.createElement("code");
+                    telm.innerText += t[cnt].content;
+                    tpelm.appendChild(telm);
+                    ret.appendChild(tpelm);
+                break;
+                case "embed":
+                    tpelm = document.createElement("pre");
+                    telm = document.createElement("code");
+                    telm.innerText += t[cnt].content;
+                    tpelm.appendChild(telm);
+                    ret.appendChild(tpelm);
+                break;
             }
         }
+        console.log(ret)
         return ret;
+    }
+}
+class NMUembed {
+    constructor (type="") {
     }
 }
