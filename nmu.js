@@ -9,7 +9,7 @@ class NMUc {
         let ret = [];
         let nstxt = "";
         while (t.length>i) {
-            if (t[i-1]!="\\"&&(t[i]=="#"||t[i]=="{"&&t[i+1]=="{")) { // structure
+            if (t[i-1]!="\\"&&(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) { // structure
                 if (nstxt.length>0) {
                     ret.push({type:"body",child:this.P_block(nstxt)});
                     nstxt = "";
