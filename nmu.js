@@ -11,7 +11,10 @@ class NMUc {
         while (t.length>i) {
             if (t[i-1]!="\\"&&(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) { // structure
                 if (nstxt.length>0) {
-                    ret.push({type:"body",child:this.P_block(nstxt)});
+                    let child = this.P_block(nstxt);
+                    for (let chd of child) {
+                        ret.push(chd);
+                    }
                     nstxt = "";
                 }
                 if (t[i]=="#") { // title
@@ -77,7 +80,10 @@ class NMUc {
             }
         }
         if (nstxt.length>0) {
-            ret.push({type:"body",child:this.P_block(nstxt)});
+            let child = this.P_block(nstxt);
+            for (let chd of child) {
+                ret.push(chd);
+            }
             nstxt = "";
         }
         return ret;
@@ -163,24 +169,17 @@ class NMUc {
         let t = this.parse;
         for (let cnt=0;cnt<t.length;cnt++) {
             switch (t[cnt].type) {
-                case "body":
-                    for (let cbt=0;cbt<t[cnt].child.length;cbt++) {
-                        let bcc = t[cnt].child[cbt];
-                        switch (bcc.type) {
-                            case "text":
-                                ret += bcc.text;
-                            break;
-                            case "alias":
-                                ret += bcc.text;
-                            break;
-                            case "link":
-                                ret += bcc.text;
-                            break;
-                            case "inline":
-                                ret += bcc.text;
-                            break;
-                        }
-                    }
+                case "text":
+                    ret += t[cnt].text;
+                break;
+                case "alias":
+                    ret += t[cnt].text;
+                break;
+                case "link":
+                    ret += t[cnt].text;
+                break;
+                case "inline":
+                    ret += t[cnt].text;
                 break;
                 case "dtitle":
                     ret += "*** ";
@@ -219,34 +218,27 @@ class NMUc {
         let tpelm;
         for (let cnt=0;cnt<t.length;cnt++) {
             switch (t[cnt].type) {
-                case "body":
-                    for (let cbt=0;cbt<t[cnt].child.length;cbt++) {
-                        let bcc = t[cnt].child[cbt];
-                        switch (bcc.type) {
-                            case "text":
-                                telm = document.createElement("span");
-                                telm.innerText = bcc.text;
-                                ret.appendChild(telm);
-                            break;
-                            case "alias":
-                                telm = document.createElement("span");
-                                telm.innerText = bcc.text;
-                                telm.title = bcc.alias.join(",");
-                                ret.appendChild(telm);
-                            break;
-                            case "link":
-                                telm = document.createElement("a");
-                                telm.innerText = bcc.text;
-                                telm.href = bcc.content;
-                                ret.appendChild(telm);
-                            break;
-                            case "inline":
-                                telm = document.createElement("code");
-                                telm.innerText = bcc.text;
-                                ret.appendChild(telm);
-                            break;
-                        }
-                    }
+                case "text":
+                    telm = document.createElement("span");
+                    telm.innerText = t[cnt].text;
+                    ret.appendChild(telm);
+                break;
+                case "alias":
+                    telm = document.createElement("span");
+                    telm.innerText = t[cnt].text;
+                    telm.title = t[cnt].alias.join(",");
+                    ret.appendChild(telm);
+                break;
+                case "link":
+                    telm = document.createElement("a");
+                    telm.innerText = t[cnt].text;
+                    telm.href = t[cnt].content;
+                    ret.appendChild(telm);
+                break;
+                case "inline":
+                    telm = document.createElement("code");
+                    telm.innerText = t[cnt].text;
+                    ret.appendChild(telm);
                 break;
                 case "dtitle":
                     telm = document.createElement("h1");
