@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <script src="./nmu.js"></script>
+        <meta charset="utf-8"/>
+        <script src="./html.js"></script>
     </head>
     <body>
+        <div id="view"></div>
     </body>
 </html>
 <script>
 
-// let rt = new NMUc("Hello World");
-// rt.parse(rt.text);
+function start(data) {
+    console.log("file loaded")
+    console.log(data);
+    let rt = new NMUc(data);
+    console.log("\n\n----------------------------------------------\n\n");
+    console.log(rt.getTXT());
+    document.getElementById("view").innerText = rt.getTXT();
+}
 
-// test
-let rt = new NMUc("# Hello World\ntext\ntext\n\ntext[https://example.com/]a\n(:aiu,AIU,あいう))[hello](https://example.com)`hello`\n\n#1 txt-codeblock\nfwae\n```txt\nhello\n```\n\n#2txt-embed\n```embed-txt\nhello\n```");
-console.log("----------------------------------------------\n\n");
-console.log(rt.text);
-console.log("\n\n----------------------------------------------\n\n");
-console.log(rt.getTXT());
-console.log("\n\n----------------------------------------------");
-document.getElementsByTagName("body")[0].appendChild(rt.getHTML())
+async function samplefile() {
+    let res = await fetch(`./a.html`, {method: "GET"});
+    let data = await res.text();
+    start(data);
+}
+samplefile();
+
 
 </script>
