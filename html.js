@@ -13,10 +13,18 @@ class NMUc {
         let eatt = "";
         let child = "";
         let tfflag = false;
+        let searchop = text.indexOf("<");
+        if (searchop==-1) {
+            return [{tag:"text",att:"",child:text}];
+        }
         while (t.length>i) {
-            if (t[i]=="<") {
+            let searchop = text.indexOf("<");
+            if (searchop==-1) {
+                return ret;
+            }
+            else {
                 tfflag = true;
-                i++;
+                i+=searchop+1;
                 while (!(t[i]==">"||t[i]==" ")&&t.length>i) {
                     tag += t[i];
                     i++;
@@ -29,7 +37,7 @@ class NMUc {
                 i++;
                 let ocnt = 0;
                 while (t.length>i) {
-                    
+
                     if (t[i]=="<") {
                         if (t[i+1]=="/") {
                             if (ocnt==0) {i++;break;}

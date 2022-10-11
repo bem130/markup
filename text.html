@@ -15,12 +15,11 @@ function start(data) {
     console.log(data);
     let rt = new NMUc(data);
     console.log("\n\n----------------------------------------------\n\n");
-    console.log(rt.getTXT());
     document.getElementById("view").innerText = rt.getTXT();
 }
 
 async function samplefile() {
-    let res = await fetch(`./a.html`, {method: "GET"});
+    let res = await fetch(`./b.txt`, {method: "GET"});
     let data = await res.text();
     start(data);
 }
