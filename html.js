@@ -36,27 +36,26 @@ class NMUc {
                 }
                 i++;
                 let ocnt = 0;
-                while (t.length>i) {
-
-                    if (t[i]=="<") {
-                        if (t[i+1]=="/") {
-                            if (ocnt==0) {i++;break;}
-                            child += "</";
-                            i++;
-                            ocnt--;
-                        }
-                        else {
-                            ocnt++;
-                        }
+                let j = t.length;
+                while (j>=i) {
+                    if (t[j]=="/") {
+                        if (ocnt==0) {j++;break;}
+                        j++;
+                        ocnt--;
                     }
-                    child += t[i];
-                    i++;
+                    else {
+                        ocnt++;
+                    }
+                    j--;
                 }
+                console.log(j)
+                i = j;
                 i+=2;
                 while (!(t[i]==">")&&t.length>i) {
                     eatt += t[i];
                     i++;
                 }
+                console.log(child);
                 child = this.P_parse(child);
                 if (["script","style"].indexOf(tag)==-1&&tag!="") {
                     ret.push({tag:tag,att:att,child:child})
