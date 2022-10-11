@@ -58,7 +58,7 @@ class NMUc {
                     i++;
                 }
                 child = this.P_parse(child);
-                if (["script","style"].indexOf(tag)==-1) {
+                if (["script","style"].indexOf(tag)==-1&&tag!="") {
                     ret.push({tag:tag,att:att,child:child})
                 }
                 tag = "";
