@@ -6,7 +6,6 @@ class NMUc {
     }
     P_parse(text) {
         let t = text;
-        console.log(t,"t")
         let i = 0;
         let ret = [];
         let tag = "";
@@ -14,18 +13,10 @@ class NMUc {
         let eatt = "";
         let child = "";
         let tfflag = false;
-        let searchop = text.indexOf("<");
-        if (searchop==-1) {
-            return [{tag:"text",att:"",child:text}];
-        }
         while (t.length>i) {
-            let searchop = text.slice(i).indexOf("<");
-            if (searchop==-1) {
-                return ret;
-            }
-            else {
+            if (t[i]=="<") {
                 tfflag = true;
-                i+=searchop+1;
+                i++;
                 while (!(t[i]==">"||t[i]==" ")&&t.length>i) {
                     tag += t[i];
                     i++;
@@ -36,24 +27,30 @@ class NMUc {
                     i++;
                 }
                 i++;
-                let j = t.length-searchop;
-                while (j>i) {
-                    if (t[j]=="/") {
-                        break;
+                let ocnt = 0;
+                while (t.length>i) {
+                    
+                    if (t[i]=="<") {
+                        if (t[i+1]=="/") {
+                            if (ocnt==0) {i++;break;}
+                            child += "</";
+                            i++;
+                            ocnt--;
+                        }
+                        else {
+                            ocnt++;
+                        }
                     }
-                    j--;
+                    child += t[i];
+                    i++;
                 }
-                child = t.slice(i-searchop,j-1);
-                // console.log(j,i,searchop,i-searchop)
-                i = j+2;
-                // i+=2;
-                // while (!(t[i]==">")&&t.length>i) {
-                //     eatt += t[i];
-                //     i++;
-                // }
-                console.log(child,"child");
-                //child = this.P_parse(child);
-                if (["script","style"].indexOf(tag)==-1&&tag!="") {
+                i+=2;
+                while (!(t[i]==">")&&t.length>i) {
+                    eatt += t[i];
+                    i++;
+                }
+                child = this.P_parse(child);
+                if (["script","style"].indexOf(tag)==-1) {
                     ret.push({tag:tag,att:att,child:child})
                 }
                 tag = "";
