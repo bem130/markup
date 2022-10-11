@@ -18,7 +18,7 @@ class NMUc {
             return [{tag:"text",att:"",child:text}];
         }
         while (t.length>i) {
-            let searchop = text.indexOf("<");
+            searchop = text.indexOf("<");
             if (searchop==-1) {
                 return ret;
             }
@@ -36,31 +36,36 @@ class NMUc {
                 }
                 i++;
                 let ocnt = 0;
-                while (t.length>i) {
+                if (text.slice(i)[1]=="/") {
+                    console.log("aaa")
+                }
+                console.log(text.slice(i))
+                console.log(i,searchop,text.slice(i))
+                // while (t.length>i) {
 
-                    if (t[i]=="<") {
-                        if (t[i+1]=="/") {
-                            if (ocnt==0) {i++;break;}
-                            child += "</";
-                            i++;
-                            ocnt--;
-                        }
-                        else {
-                            ocnt++;
-                        }
-                    }
-                    child += t[i];
-                    i++;
-                }
-                i+=2;
-                while (!(t[i]==">")&&t.length>i) {
-                    eatt += t[i];
-                    i++;
-                }
-                child = this.P_parse(child);
-                if (["script","style"].indexOf(tag)==-1&&tag!="") {
-                    ret.push({tag:tag,att:att,child:child})
-                }
+                //     if (t[i]=="<") {
+                //         if (t[i+1]=="/") {
+                //             if (ocnt==0) {i++;break;}
+                //             child += "<";
+                //             i++;
+                //             ocnt--;
+                //         }
+                //         else {
+                //             ocnt++;
+                //         }
+                //     }
+                //     child += t[i];
+                //     i++;
+                // }
+                // i+=2;
+                // while (!(t[i]==">")&&t.length>i) {
+                //     eatt += t[i];
+                //     i++;
+                // }
+                // child = this.P_parse(child);
+                // if (["script","style"].indexOf(tag)==-1&&tag!="") {
+                //     ret.push({tag:tag,att:att,child:child})
+                // }
                 tag = "";
                 att = "";
                 eatt = "";
