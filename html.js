@@ -6,6 +6,7 @@ class NMUc {
     }
     P_parse(text) {
         let t = text;
+        console.log(t,"t")
         let i = 0;
         let ret = [];
         let tag = "";
@@ -18,7 +19,7 @@ class NMUc {
             return [{tag:"text",att:"",child:text}];
         }
         while (t.length>i) {
-            let searchop = text.indexOf("<");
+            let searchop = text.slice(i).indexOf("<");
             if (searchop==-1) {
                 return ret;
             }
@@ -35,28 +36,23 @@ class NMUc {
                     i++;
                 }
                 i++;
-                let ocnt = 0;
-                let j = t.length;
-                while (j>=i) {
+                let j = t.length-searchop;
+                while (j>i) {
                     if (t[j]=="/") {
-                        if (ocnt==0) {j++;break;}
-                        j++;
-                        ocnt--;
-                    }
-                    else {
-                        ocnt++;
+                        break;
                     }
                     j--;
                 }
-                console.log(j)
-                i = j;
-                i+=2;
-                while (!(t[i]==">")&&t.length>i) {
-                    eatt += t[i];
-                    i++;
-                }
-                console.log(child);
-                child = this.P_parse(child);
+                child = t.slice(i-searchop,j-1);
+                // console.log(j,i,searchop,i-searchop)
+                i = j+2;
+                // i+=2;
+                // while (!(t[i]==">")&&t.length>i) {
+                //     eatt += t[i];
+                //     i++;
+                // }
+                console.log(child,"child");
+                //child = this.P_parse(child);
                 if (["script","style"].indexOf(tag)==-1&&tag!="") {
                     ret.push({tag:tag,att:att,child:child})
                 }
