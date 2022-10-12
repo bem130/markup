@@ -1,4 +1,7 @@
 <html>
+    <head>
+        <title>Bem's Room</title>
+    </head>
     <body>
         <h1>Bem's Room</h1>
         <p>こんにちは。Bem130です。</p>
@@ -10,7 +13,5 @@
             <p><a href="https://twitter.com/bem130">Twitter: Bem130</a></p>
             <p><a href="https://github.com/bem130">Github: Bem130</a></p>
         </div>
-    </body>
-    <body>
     </body>
 </html>

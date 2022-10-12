@@ -10,6 +10,32 @@ it isn't supporting non-text contents such as image
 you should use embed blocks to show images
 #1 representations
 {{code:nml
+# (title)
+
+#1 (title1)
+#2 (title2)
+#3 (title3)
+#4 (title4)
+
+(text)
+
+{url:(url)}
+{url:(text);(url)}
+{code:(code)}
+{alias:(text);(alias);}
+
+{{code:(type)
+(code block)
+\}}
+{{embed:(type)
+(embed data)
+\}}
+
+}}
+
+
+
+{{code:nml
 # title
 
 #1 title1
