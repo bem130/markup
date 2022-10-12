@@ -59,9 +59,6 @@ class NMUc {
                     if (type.startsWith("embed:")) {
                         ret.push({type:"embed",text:type.slice(6),content:content});
                     }
-                    if (type.startsWith("code:\n")) {
-                        ret.push({type:"cblock",text:"",content:content});
-                    }
                     else if (type.startsWith("code:")) {
                         ret.push({type:"cblock",text:type.slice(5),content:content});
                     }
@@ -99,69 +96,51 @@ class NMUc {
         let t = block;
         let nstxt = "";
         let cblk = [];
+        let tag = "";
         while (t.length>i) {
-            if (t[i]=="["||((t[i]=="{"||t[i]=="(")&&t[i+1]==":")) { // structure
+            if ((t[i]=="{")) { // structure
                 if (nstxt.length>0) {
-                    cblk.push({type:"text",text:nstxt});
+                    cblk.push({type:"text",child:[nstxt]});
                     nstxt = "";
                 }
-                if (t[i]=="[") { // link
-                    let t1 = "";
-                    let t2 = "";
+                i++;
+                while (t.length>i) {
+                    if (t[i]==":") {
+                        console.log(tag)
+                        break;
+                    }
+                    tag+=t[i];
                     i++;
-                    while (t[i]!="]"&&t.length>i) {
-                        t1 += t[i];
-                        i++;
+                }
+                let child = [];
+                let ctxt = "";
+                i++;
+                while (t.length>i) {
+                    if (t[i]=="}") {
+                        child.push(ctxt);
+                        cblk.push({type:tag,child:child})
+                        break;
                     }
+                    else if (t[i]==";") {
+                        child.push(ctxt);
+                        i++;
+                        ctxt = "";
+                    }
+                    ctxt+=t[i];
                     i++;
-                    if (t[i]!="(") {i--;cblk.push({type:"link",text:t1,content:t1})}
-                    else {
-                        i++;
-                        while (t[i]!=")"&&t.length>i) {
-                            t2 += t[i];
-                            i++;
-                        }
-                        cblk.push({type:"link",text:t1,content:t2})
-                    }
-                }
-                if (t[i]=="{"&&t[i+1]==":") { // inline
-                    let t1 = "";
-                    i+=2;
-                    while (t[i]!="}"&&t.length>i) {
-                        t1 += t[i];
-                        i++;
-                    }
-                    cblk.push({type:"inline",text:t1})
-                }
-                if (t[i]=="("&&t[i+1]==":") { // alias
-                    i+=2;
-                    let names = [];
-                    let t1 = "";
-                    while (t[i]!=")"&&t.length>i) {
-                        if (t[i]==",") {
-                            names.push(t1);
-                            t1 = "";
-                        }
-                        else {
-                            t1 += t[i];
-                        }
-                        i++;
-                    }
-                    if (t[i-1]!=",") {
-                        names.push(t1);
-                    }
-                    cblk.push({type:"alias",text:names[0],alias:names})
                 }
             }
             else {
                 nstxt+=t[i];
             }
+            tag = "";
             i++;
         }
         if (nstxt.length>0) {
-            cblk.push({type:"text",text:nstxt});
+            cblk.push({type:"text",child:[nstxt]});
             nstxt = "";
         }
+        console.log(cblk)
         return cblk;
     }
     getTXT() {
@@ -170,16 +149,16 @@ class NMUc {
         for (let cnt=0;cnt<t.length;cnt++) {
             switch (t[cnt].type) {
                 case "text":
-                    ret += t[cnt].text;
+                    ret += t[cnt].child[0];
                 break;
                 case "alias":
-                    ret += t[cnt].text;
+                    ret += t[cnt].child[0];
                 break;
-                case "link":
-                    ret += t[cnt].text;
+                case "url":
+                    ret += t[cnt].child[0];
                 break;
                 case "inline":
-                    ret += t[cnt].text;
+                    ret += t[cnt].child[0];
                 break;
                 case "dtitle":
                     ret += "*** ";
@@ -220,19 +199,19 @@ class NMUc {
             switch (t[cnt].type) {
                 case "text":
                     telm = document.createElement("span");
-                    telm.innerText = t[cnt].text;
+                    telm.innerText = t[cnt].child[0];
                     ret.appendChild(telm);
                 break;
                 case "alias":
                     telm = document.createElement("span");
-                    telm.innerText = t[cnt].text;
-                    telm.title = t[cnt].alias.join(",");
+                    telm.innerText = t[cnt].child[0];
+                    telm.title = t[cnt].child.join(",");
                     ret.appendChild(telm);
                 break;
-                case "link":
+                case "url":
                     telm = document.createElement("a");
-                    telm.innerText = t[cnt].text;
-                    telm.href = t[cnt].content;
+                    telm.innerText = t[cnt].child[0];
+                    telm.href = t[cnt].child[0];
                     ret.appendChild(telm);
                 break;
                 case "inline":
