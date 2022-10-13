@@ -157,7 +157,7 @@ class NMUc {
                 case "url":
                     ret += t[cnt].child[0];
                 break;
-                case "inline":
+                case "code":
                     ret += t[cnt].child[0];
                 break;
                 case "dtitle":
@@ -214,9 +214,9 @@ class NMUc {
                     telm.href = t[cnt].child[0];
                     ret.appendChild(telm);
                 break;
-                case "inline":
+                case "code":
                     telm = document.createElement("code");
-                    telm.innerText = t[cnt].text;
+                    telm.innerText = t[cnt].child[0];
                     ret.appendChild(telm);
                 break;
                 case "dtitle":
