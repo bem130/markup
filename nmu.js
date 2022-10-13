@@ -143,53 +143,6 @@ class NMUc {
         console.log(cblk)
         return cblk;
     }
-    getTXT() {
-        let ret = "";
-        let t = this.parse;
-        for (let cnt=0;cnt<t.length;cnt++) {
-            switch (t[cnt].type) {
-                case "text":
-                    ret += t[cnt].child[0];
-                break;
-                case "alias":
-                    ret += t[cnt].child[0];
-                break;
-                case "url":
-                    ret += t[cnt].child[0];
-                break;
-                case "code":
-                    ret += t[cnt].child[0];
-                break;
-                case "dtitle":
-                    ret += "*** ";
-                    ret += t[cnt].text;
-                    ret += " ***\n";
-                break;
-                case "title":
-                    let st = "";
-                    let sp = "";
-                    for (let i=0;i<t[cnt].size-1;i++) {
-                        sp+=" ";
-                    }
-                    for (let i=5;i>=t[cnt].size;i--) {
-                        st+="-";
-                    }
-                    ret += sp;
-                    ret += st;
-                    ret += " ";
-                    ret += t[cnt].text;
-                    ret += "\n";
-                break;
-                case "cblock":
-                    ret += t[cnt].content;
-                break;
-                case "embed":
-                    ret += t[cnt].content;
-                break;
-            }
-        }
-        return ret;
-    }
     getHTML() {
         let ret = document.createElement("div");
         let t = this.parse;
