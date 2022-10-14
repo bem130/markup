@@ -145,6 +145,7 @@ class NMUc {
     }
     getHTML() {
         let ret = document.createElement("div");
+        ret.classList.add("nml");
         let t = this.parse;
         let telm;
         let tpelm;
@@ -164,7 +165,12 @@ class NMUc {
                 case "url":
                     telm = document.createElement("a");
                     telm.innerText = t[cnt].child[0];
-                    telm.href = t[cnt].child[0];
+                    if (t[cnt].child.length>1) {
+                        telm.href = t[cnt].child[1];
+                    }
+                    else {
+                        telm.href = t[cnt].child[0];
+                    }
                     ret.appendChild(telm);
                 break;
                 case "code":
@@ -186,17 +192,14 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].text)
+                    telm.classList.add(t[cnt].type);
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;
-                case "embed":
-                    tpelm = document.createElement("pre");
-                    telm = document.createElement("code");
-                    telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].text)
-                    tpelm.appendChild(telm);
-                    ret.appendChild(tpelm);
+                case "image":
+                    let imgelm = document.createElement("img");
+                    imgelm.src = t[cnt].child[0];
+                    ret.appendChild(imgelm);
                 break;
             }
         }
