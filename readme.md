@@ -1,4 +1,4 @@
-# Neknaj Markup
+# Neknaj Markup Language
 ## about
 hello, this is a markup language made by Bem130  
 ## motivation to start making

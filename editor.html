@@ -15,7 +15,7 @@
 
 function update() {
     code = document.getElementById("editor").value;
-    let rt = new NMUc(code);
+    let rt = new NMLc(code);
     document.getElementById("preview").innerHTML = "";
     document.getElementById("preview").appendChild(rt.getHTML());
 }
@@ -74,6 +74,15 @@ codearea.onkeypress = update;
         max-height: 30vh;
         width: 100%;
         min-width: 100px;
+    }
+    .nml table {
+        border: 1px solid;
+        border-collapse: collapse;
+        min-width: 100px;
+        width: 40%;
+    }
+    .nml td {
+        border: 1px solid;
     }
 </style>
 <style>

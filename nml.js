@@ -1,4 +1,4 @@
-class NMUc {
+class NMLc {
     constructor (text="") {
         this.text = text;
         this.parse = this.P_parse(text);
@@ -140,10 +140,11 @@ class NMUc {
             cblk.push({type:"text",child:[nstxt]});
             nstxt = "";
         }
-        console.log(cblk)
         return cblk;
     }
     getHTML() {
+        let nmlembed = new NMLembed();
+        console.log(this.parse);
         let ret = document.createElement("div");
         ret.classList.add("nml");
         ret.classList.add("page");
@@ -202,13 +203,34 @@ class NMUc {
                     imgelm.src = t[cnt].child[0];
                     ret.appendChild(imgelm);
                 break;
+                case "embed":
+                    if (nmlembed[t[cnt].text]!=null) {
+                        ret = nmlembed[t[cnt].text](ret,t[cnt].content);
+                    }
+                    else {console.warn("embed-type '"+t[cnt].text+"' not found");}
+                break;
             }
         }
-        console.log(ret)
         return ret;
     }
 }
-class NMUembed {
+class NMLembed {
     constructor (type="") {
+    }
+    table (ret,data) {
+        let tableelm = document.createElement("table");
+        let rows = data.split("\n");
+        for (let row of rows) {
+            let trelm = document.createElement("tr");
+            let cols = row.split(",");
+            for (let col of cols) {
+                let tdelm = document.createElement("td");
+                tdelm.innerText = col;
+                trelm.appendChild(tdelm);
+            }
+            tableelm.appendChild(trelm);
+        }
+        ret.appendChild(tableelm);
+        return ret;
     }
 }
