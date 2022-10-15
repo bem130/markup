@@ -192,7 +192,7 @@ class NMUc {
                     tpelm = document.createElement("pre");
                     telm = document.createElement("code");
                     telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].type);
+                    telm.classList.add(t[cnt].text);
                     tpelm.appendChild(telm);
                     ret.appendChild(tpelm);
                 break;

@@ -5,22 +5,13 @@
     </head>
     <body>
         <div id="splitview">
-            <div id="lefts">
-                <textarea id="editor" placeholder="input here"></textarea>
-            </div>
+            <textarea id="editor" placeholder="input here"></textarea>
             <div class="resizer" id="dragbar"></div>
-            <div id="rights">
-                <div id="preview"></div>
-            </div>
+            <div id="preview"></div>
         </div>
     </body>
 </html>
 <script>
-
-// let rt = new NMUc("Hello World");
-// rt.parse(rt.text);
-
-// test
 
 function update() {
     code = document.getElementById("editor").value;
@@ -33,28 +24,6 @@ codearea = document.getElementById("editor")
 codearea.oninput = update;
 codearea.onkeypress = update;
 
-let dragbar = document.getElementById("dragbar");
-let leftelm = document.getElementById("lefts");
-let rightelm = document.getElementById("rights");
-let mx = 0;
-let leftwidth = 0;
-let arange = [10,90];
-leftelm.style.width = (50)+"%";
-dragbar.onmousedown = function(e) {
-    mx = e.clientX;
-    leftwidth = leftelm.getBoundingClientRect().width;
-    dragbar.onmousemove = function(e) {
-        let neww = ((leftwidth + e.clientX - mx) * 100) / dragbar.parentNode.getBoundingClientRect().width;
-        if (neww<arange[0]) { neww = arange[0]; }
-        if (neww>arange[1]) { neww = arange[1]; }
-        leftelm.style.width = neww+"%";
-    }
-    document.onmousemove = dragbar.onmousemove;
-}
-dragbar.onmouseup = function(e) {
-    dragbar.onmousemove = function() {};
-    document.onmousemove = dragbar.onmousemove;
-}
 
 </script>
 <style>
@@ -71,13 +40,12 @@ dragbar.onmouseup = function(e) {
         width: 0px;
         padding-right: 5px;
         padding-left: 5px;
-        cursor: col-resize;
         background-color: black;
         background:linear-gradient(to right, rgba(0,0,0,0) 30%, black, rgba(0,0,0,0) 70%)
     }
     #editor {
         padding: 10px;
-        width: calc(100% - 20px);
+        width: 400px;
         height: calc(100% - 20px);
         border: none;
         resize: none;
@@ -86,7 +54,7 @@ dragbar.onmouseup = function(e) {
     }
     #preview {
         padding: 10px;
-        width: calc(100% - 20px);
+        width: calc(100% - 400px);
         height: calc(100% - 20px);
     }
 </style>
@@ -103,7 +71,31 @@ dragbar.onmouseup = function(e) {
         font-family: monospace;
     }
     .nml img{
-        max-height: 40vh;
+        max-height: 30vh;
         width: 100%;
+        min-width: 100px;
+    }
+</style>
+<style>
+    /* NML PALE BLUE */
+    body {
+        background-color: rgba(97, 215, 224, 0.1);
+    }
+    .nml h1,.nml h2,.nml h3,.nml h4,.nml h5 {
+        background: linear-gradient(to top, rgba(110, 139, 220, 0.3) 0%, rgba(0,0,0,0) 10%);
+    }
+    .nml h1:first-of-type {
+        background: linear-gradient(to right top, rgba(86, 115, 188, 0.3) 0%, rgba(0,0,0,0) 70%);
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .nml pre {
+        margin: 20px;
+    }
+    .nml code {
+        background-color: rgb(226, 233, 241);
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid rgb(151, 168, 194);
     }
 </style>
