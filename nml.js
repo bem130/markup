@@ -146,6 +146,7 @@ class NMUc {
     getHTML() {
         let ret = document.createElement("div");
         ret.classList.add("nml");
+        ret.classList.add("page");
         let t = this.parse;
         let telm;
         let tpelm;
