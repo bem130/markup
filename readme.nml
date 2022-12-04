@@ -4,7 +4,7 @@ hello, this is a markup language made by Bem130
 #1 motivation to start making
 there is some point that i don't like in many lightweight-markup languages
 #1 editor
-[open](https://bem130.github.io/markup/editor)
+{url:https://bem130.github.io/markup/editor;open}
 #1 features
 it isn't supporting non-text contents such as image
 you should use embed blocks to show images
