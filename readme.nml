@@ -1,13 +1,17 @@
 # Neknaj Markup Language
+
 #1 about
 hello, this is a markup language made by Bem130
 #1 motivation to start making
 there is some point that i don't like in many lightweight-markup languages
+
 #1 editor
 {url:https://bem130.github.io/markup/editor;open}
+
 #1 features
 it isn't supporting non-text contents such as image
 you should use embed blocks to show images
+
 #1 representations
 {{code:nml
 # (title)
@@ -30,34 +34,4 @@ you should use embed blocks to show images
 {{embed:(type)
 (embed data)
 \}}
-
-}}
-
-
-
-{{code:nml
-# title
-
-#1 title1
-#2 title2
-#3 title3
-#4 title4
-
-{{code
-code block
-\}}
-
-{{code:type
-code block
-\}}
-
-{{embed:type
-embed content
-\}}
-
-text
-[url]
-[text](url)
-{:inline code}
-(:text,alias,)
 }}

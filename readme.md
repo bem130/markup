@@ -10,29 +10,24 @@ it isn't supporting non-text contents such as image
 you should use embed blocks to show images  
 ## representations
 ````nm
-# title
+# (title)
 
-#1 title1
-#2 title2
-#3 title3
-#4 title4
+#1 (title1)
+#2 (title2)
+#3 (title3)
+#4 (title4)
 
-{{code
-code block
+(text)
+
+{url:(url)}
+{url:(text);(url)}
+{code:(code)}
+{alias:(text);(alias);}
+
+{{code:(type)
+(code block)
 }}
-
-{{code:type
-code block
+{{embed:(type)
+(embed data)
 }}
-
-{{embed:type
-embed content
-}}
-
-text
-[url]
-[text](url)
-{:inline code}
-(:text,alias,)
-
 ````
