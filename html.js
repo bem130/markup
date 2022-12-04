@@ -1,86 +1,101 @@
 class NMUc {
     constructor (text="") {
         this.text = text;
-        this.parse = this.P_parse(text);
-        console.log(this.parse);
+        let tags = this.P_read(text);
+        let pars = this.P_parse(tags);
+        console.log(pars);
     }
-    P_parse(text) {
+    P_parse(ret) {
+        console.log(ret)
+        let strc = [];
+        let i = 0;
+        let child = [];
+        let tflag = false;
+        while (i<ret.length) {
+            console.log(0)
+            if (ret[i].type=="open") {
+                let ocnt = 0;
+                let tagname = ret[i].text;
+                let schild = i;
+                i++;
+                if (ret[i].type=="open") {
+                    i++;
+                    ocnt++;
+                }
+                else if (ret[i].type=="close") {
+                    if (ocnt==0) {
+                        i++;
+                        console.log(schild,i)
+                        strc.push({tag:tagname,child:ret.slice(0,10)});
+                        continue;
+                    }
+                    else {
+                        i++;
+                        ocnt--;
+                    }
+                }
+                else {
+                    child.push(ret[i]);
+                    i++;
+                }
+            }
+            i++;
+        }
+        return strc;
+    }
+    P_read(text) {
         let t = text;
         let i = 0;
         let ret = [];
         let tag = "";
-        let att = "";
-        let eatt = "";
-        let child = "";
-        let tfflag = false;
         while (t.length>i) {
-            if (t[i]=="<") {
-                tfflag = true;
-                i++;
-                while (!(t[i]==">"||t[i]==" ")&&t.length>i) {
+            if (t[i]=="<"&&t[i+1]!="/") {
+                if (tag.length>0) {
+                    ret.push({type:"text",text:tag});
+                    tag = "";
+                }
+                while (t.length>i) {
+                    if (t[i]==">") {
+                        tag += t[i];
+                        ret.push({type:"open",text:tag});
+                        tag = "";
+                        i++;
+                        break;
+                    }
                     tag += t[i];
                     i++;
                 }
-                if (t[i]==" ") {i++;}
-                while (t[i]!=">"&&t.length>i) {
-                    att += t[i];
-                    i++;
-                }
-                i++;
-                let ocnt = 0;
-                while (t.length>i) {
-                    
-                    if (t[i]=="<") {
-                        if (t[i+1]=="/") {
-                            if (ocnt==0) {i++;break;}
-                            child += "</";
-                            i++;
-                            ocnt--;
-                        }
-                        else {
-                            ocnt++;
-                        }
-                    }
-                    child += t[i];
-                    i++;
-                }
-                i+=2;
-                while (!(t[i]==">")&&t.length>i) {
-                    eatt += t[i];
-                    i++;
-                }
-                child = this.P_parse(child);
-                if (["script","style"].indexOf(tag)==-1) {
-                    ret.push({tag:tag,att:att,child:child})
-                }
-                tag = "";
-                att = "";
-                eatt = "";
-                child = "";
             }
-            i++;
-        }
-        if (tfflag) {return ret;}
-        else {return [{tag:"text",att:"",child:text}];}
-    }
-    getTXT() {
-        this.outtxt = ""
-        this._gettxt(this.parse);
-        return this.outtxt;
-    }
-    _gettxt(data) {
-        for (let tag of data) {
-            if (tag.tag=="text") {
-                this.outtxt += tag.child;
-                return tag.child;
+            else if (t[i]=="<"&&t[i+1]=="/") {
+                if (tag.length>0) {
+                    ret.push({type:"text",text:tag});
+                    tag = "";
+                }
+                while (t.length>i) {
+                    if (t[i]==">") {
+                        tag += t[i];
+                        ret.push({type:"close",text:tag});
+                        tag = "";
+                        i++;
+                        break;
+                    }
+                    tag += t[i];
+                    i++;
+                }
             }
             else {
-                if (["title","h1","h2","h3","h4","h5","h6","h7","div","p"].indexOf(tag.tag)!=-1) {
-                    this.outtxt+="\n";
-                }
-                this._gettxt(tag.child);
+                tag+=t[i];
+                i++;
             }
         }
-        return "";
+        return ret;
     }
 }
+
+function start(data) {
+    console.log("")
+    console.log(data);
+    console.log("----------------------------------------------");
+    let rt = new NMUc(data);
+}
+start(`<html><meta charset="utf-8">abv</html>`);
