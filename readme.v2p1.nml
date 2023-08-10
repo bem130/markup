@@ -1,0 +1,19 @@
+# Neknaj Markup Language v2 {{
+    # About {{
+        HI, THis is a amarkup language made by Bem130.
+    }}
+    # Motivation to start making {{
+        in many lightweight markup languages, there are some things that I dom't like.
+    }}
+    # Representations {{
+        {{code:nml;
+            \# title \{\{
+                content
+            \}\}
+            \{\{type\:option\;
+                content
+            \}\}
+            \{type\:content\}
+        }}
+    }}
+}}

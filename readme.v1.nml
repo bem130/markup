@@ -1,0 +1,30 @@
+# Neknaj Markup Language v1
+
+#1 about
+hi, this is a markup language made by Bem130
+#1 motivation to start making
+in many lightweight-markup languages, there are some things that i don't like
+
+#1 representations
+{{code:nml
+# (title)
+
+#1 (title1)
+#2 (title2)
+#3 (title3)
+#4 (title4)
+
+(text)
+
+{url:(url)}
+{url:(text);(url)}
+{code:(code)}
+{alias:(text);(alias);}
+
+{{code:(type)
+(code block)
+\}}
+{{embed:(type)
+(embed data)
+\}}
+}}
