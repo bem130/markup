@@ -6,7 +6,7 @@ hi, this is a markup language made by Bem130
 in many lightweight-markup languages, there are some things that i don't like
 
 #1 representations
-{{code:nml
+{{code:nmlv1
 # (title)
 
 #1 (title1)

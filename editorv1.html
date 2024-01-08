@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="./nml1.js"></script>
+    </head>
+    <body>
+        <div id="splitview">
+            <textarea id="editor" placeholder="input here"></textarea>
+            <div class="resizer" id="dragbar1"></div>
+            <div id="highlight"></div>
+            <div class="resizer" id="dragbar2"></div>
+            <div id="preview"></div>
+        </div>
+    </body>
+</html>
+<script>
+
+function update() {
+    code = document.getElementById("editor").value;
+    let rt = new NMLc(code);
+    document.getElementById("preview").innerHTML = "";
+    document.getElementById("preview").appendChild(rt.getHTML());
+}
+update();
+codearea = document.getElementById("editor")
+codearea.oninput = update;
+codearea.onkeypress = update;
+
+
+</script>
+<style>
+    #splitview {
+        position: absolute;
+        display: flex;
+        left: 0;top: 0;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100vh;
+    }
+    #splitview .resizer {
+        width: 0px;
+        padding-right: 5px;
+        padding-left: 5px;
+        background-color: black;
+        background:linear-gradient(to right, rgba(0,0,0,0) 30%, black, rgba(0,0,0,0) 70%)
+    }
+    #editor {
+        padding: 10px;
+        width: 400px;
+        height: calc(100% - 20px);
+        border: none;
+        resize: none;
+        outline: none;
+        font-family: monospace;
+    }
+    #highlight {
+        padding: 10px;
+        width: 400px;
+        height: calc(100% - 20px);
+    }
+    #preview {
+        padding: 10px;
+        width: calc(100% - 400px - 400px);
+        height: calc(100% - 20px);
+    }
+</style>
+<style>
+    /* NML */
+    .nml h1,.nml h2,.nml h3,.nml h4,.nml h5 {
+        margin: 10px;
+        margin-left: 0px;
+    }
+    .nml {
+        font-family: serif;
+    }
+    .nml code {
+        font-family: monospace;
+        display: inline-block;
+    }
+    .nml img{
+        max-height: 30vh;
+        width: 100%;
+        min-width: 100px;
+    }
+    .nml table {
+        border: 1px solid;
+        border-collapse: collapse;
+        min-width: 100px;
+        width: 40%;
+    }
+    .nml td {
+        border: 1px solid;
+    }
+</style>
+<style>
+    /* NML PALE BLUE */
+    .nml.page {
+        background-color: rgba(97, 215, 224, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .nml h1,.nml h2,.nml h3,.nml h4,.nml h5 {
+        background: linear-gradient(to top, rgba(110, 139, 220, 0.3) 0%, rgba(0,0,0,0) 10%);
+    }
+    .nml h1:first-of-type {
+        background: linear-gradient(to right top, rgba(86, 115, 188, 0.3) 0%, rgba(0,0,0,0) 70%);
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .nml pre {
+        margin: 20px;
+    }
+    .nml code {
+        background-color: rgb(226, 233, 241);
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid rgb(151, 168, 194);
+    }
+    .nml td {
+        border-color: rgb(90, 119, 163);
+        padding: 2px;
+    }
+</style>

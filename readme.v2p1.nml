@@ -6,7 +6,7 @@
         in many lightweight markup languages, there are some things that I dom't like.
     }}
     # Representations {{
-        {{code:nml;
+        {{code:nmlv1;
             \# title \{\{
                 content
             \}\}

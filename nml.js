@@ -1,236 +1,145 @@
-class NMLc {
-    constructor (text="") {
-        this.text = text;
-        this.parse = this.P_parse(text);
-    }
-    P_parse(text) {
-        let t = text;
-        let i = 0;
-        let ret = [];
-        let nstxt = "";
-        while (t.length>i) {
-            if (t[i-1]!="\\"&&(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) { // structure
-                if (nstxt.length>0) {
-                    let child = this.P_block(nstxt);
-                    for (let chd of child) {
-                        ret.push(chd);
-                    }
-                    nstxt = "";
-                }
-                if (t[i]=="#") { // title
-                    let size = -1;
-                    i++;
-                    if (t[i]==" ") {i++;}
-                    else {
-                        size = ["1","2","3","4"].indexOf(t[i])+1;
-                        i++;
-                        if (t[i]==" ") {i++;}
-                    }
-                    let content = "";
-                    while (t[i]!="\n"&&t.length>i) {
-                        content += t[i];
-                        i++;
-                    }
-                    if (size==-1) {
-                        ret.push({type:"dtitle",text:content});
-                    }
-                    else {
-                        ret.push({type:"title",size:size,text:content});
-                    }
-                }
-                else if (t[i]=="{"&&t[i+1]=="{") { // block
-                    i+=2;
-                    let type = "";
-                    while (t[i]!="\n"&&t.length>i) {
-                        type += t[i];
-                        i++;
-                    }
-                    i++;
-                    let content = "";
-                    while (t.length>i) {
-                        if (t[i]=="\n"&&t[i+1]=="}"&&t[i+2]=="}") {i+=3;break;}
-                        i++;
-                        content += t[i-1];
-                        if (t[i]=="\n"&&t[i+1]=="\\"&&t[i+2]=="}"&&t[i+3]=="}") {
-                            i+=2;
-                            content += "\n";
-                        }
-                    }
-                    if (type.startsWith("embed:")) {
-                        ret.push({type:"embed",text:type.slice(6),content:content});
-                    }
-                    else if (type.startsWith("code:")) {
-                        ret.push({type:"cblock",text:type.slice(5),content:content});
-                    }
-                }
+var NMLtool = /** @class */ (function () {
+    function NMLtool(filename) {
+        this.filename = filename;
+        { // Define the fRead function
+            // @ts-ignore
+            if (typeof require != "undefined") {
+                // @ts-ignore
+                var fs_1 = require('fs');
+                this.fRead = function (filename) {
+                    return fs_1.readFileSync(filename, 'utf8').replace(/\r\n/g, "\n");
+                };
             }
             else {
-                i++;
-                if (t[i-1]=="\\"&&(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) {
-                    i++;
-                }
-                i--;
-                if (!(t[i]=="#"||(t[i]=="{"&&t[i+1]=="{"))) {
-                    nstxt+=t[i];
-                }
-                i++;
-            }
-        }
-        if (nstxt.length>0) {
-            let child = this.P_block(nstxt);
-            for (let chd of child) {
-                ret.push(chd);
-            }
-            nstxt = "";
-        }
-        return ret;
-    }
-    P_block(block) {
-        if (block[0]=="\n") {
-            block = block.slice(1);
-        }
-        if (block[block.length-1]=="\n") {
-            block = block.slice(0,block.length-1);
-        }
-        let i = 0;
-        let t = block;
-        let nstxt = "";
-        let cblk = [];
-        let tag = "";
-        while (t.length>i) {
-            if ((t[i]=="{")) { // structure
-                if (nstxt.length>0) {
-                    cblk.push({type:"text",child:[nstxt]});
-                    nstxt = "";
-                }
-                i++;
-                while (t.length>i) {
-                    if (t[i]==":") {
-                        console.log(tag)
-                        break;
-                    }
-                    tag+=t[i];
-                    i++;
-                }
-                let child = [];
-                let ctxt = "";
-                i++;
-                while (t.length>i) {
-                    if (t[i]=="}") {
-                        child.push(ctxt);
-                        cblk.push({type:tag,child:child})
-                        break;
-                    }
-                    else if (t[i]==";") {
-                        child.push(ctxt);
-                        i++;
-                        ctxt = "";
-                    }
-                    ctxt+=t[i];
-                    i++;
-                }
-            }
-            else {
-                nstxt+=t[i];
-            }
-            tag = "";
-            i++;
-        }
-        if (nstxt.length>0) {
-            cblk.push({type:"text",child:[nstxt]});
-            nstxt = "";
-        }
-        return cblk;
-    }
-    getHTML() {
-        let nmlembed = new NMLembed();
-        console.log(this.parse);
-        let ret = document.createElement("div");
-        ret.classList.add("nml");
-        ret.classList.add("page");
-        let t = this.parse;
-        let telm;
-        let tpelm;
-        for (let cnt=0;cnt<t.length;cnt++) {
-            switch (t[cnt].type) {
-                case "text":
-                    telm = document.createElement("span");
-                    telm.innerText = t[cnt].child[0];
-                    ret.appendChild(telm);
-                break;
-                case "alias":
-                    telm = document.createElement("span");
-                    telm.innerText = t[cnt].child[0];
-                    telm.title = t[cnt].child.join(",");
-                    ret.appendChild(telm);
-                break;
-                case "url":
-                    telm = document.createElement("a");
-                    telm.innerText = t[cnt].child[0];
-                    if (t[cnt].child.length>1) {
-                        telm.href = t[cnt].child[1];
+                this.fRead = function (filename) {
+                    var hr = new XMLHttpRequest();
+                    hr.open("GET", filename, false);
+                    hr.send(null);
+                    if (hr.status == 200 || hr.status == 304) {
+                        return hr.responseText.replace(/\r\n/g, "\n");
                     }
                     else {
-                        telm.href = t[cnt].child[0];
+                        throw "err " + filename;
                     }
-                    ret.appendChild(telm);
-                break;
-                case "code":
-                    telm = document.createElement("code");
-                    telm.innerText = t[cnt].child[0];
-                    ret.appendChild(telm);
-                break;
-                case "dtitle":
-                    telm = document.createElement("h1");
-                    telm.innerText += t[cnt].text;
-                    ret.appendChild(telm);
-                break;
-                case "title":
-                    telm = document.createElement("h"+(1+t[cnt].size));
-                    telm.innerText += t[cnt].text;
-                    ret.appendChild(telm);
-                break;
-                case "cblock":
-                    tpelm = document.createElement("pre");
-                    telm = document.createElement("code");
-                    telm.innerText += t[cnt].content;
-                    telm.classList.add(t[cnt].text);
-                    tpelm.appendChild(telm);
-                    ret.appendChild(tpelm);
-                break;
-                case "image":
-                    let imgelm = document.createElement("img");
-                    imgelm.src = t[cnt].child[0];
-                    ret.appendChild(imgelm);
-                break;
-                case "embed":
-                    if (nmlembed[t[cnt].text]!=null) {
-                        ret = nmlembed[t[cnt].text](ret,t[cnt].content);
-                    }
-                    else {console.warn("embed-type '"+t[cnt].text+"' not found");}
-                break;
+                };
             }
         }
-        return ret;
+        this.code = this.fRead(filename);
+        //console.log(this.code)
     }
-}
-class NMLembed {
-    constructor (type="") {
-    }
-    table (ret,data) {
-        let tableelm = document.createElement("table");
-        let rows = data.split("\n");
-        for (let row of rows) {
-            let trelm = document.createElement("tr");
-            let cols = row.split(",");
-            for (let col of cols) {
-                let tdelm = document.createElement("td");
-                tdelm.innerText = col;
-                trelm.appendChild(tdelm);
+    NMLtool.prototype.tokenizeerror = function (message, i) {
+        // @ts-ignore
+        var error = new Error(message, this.filename);
+        error.name = "NML_TokenizeError";
+        var LineAndCol = this.getLineAndCol(i);
+        // @ts-ignore
+        error.lineNumber = LineAndCol.line;
+        error.columnNumber = LineAndCol.col;
+        //error.stack = ""
+        return error;
+    };
+    NMLtool.prototype.getLineAndCol = function (i) {
+        var j = 0;
+        var line = 1;
+        var col = 1;
+        while (j < i) {
+            if (this.code[j] == "\n") {
+                line++;
+                col = 0;
             }
-            tableelm.appendChild(trelm);
+            else {
+                col++;
+            }
+            j++;
         }
-        ret.appendChild(tableelm);
-        return ret;
-    }
+        return { line: line, col: col };
+    };
+    NMLtool.prototype.parse = function () {
+        var tar = [];
+        this.tokenarr = tar;
+        var state = 0;
+        var i = 0;
+        var tc = this.code;
+        //console.log(tar)
+        this.tokengroup = {
+            "start": "null",
+            "LF": "LF",
+            "comment.LF": "LF",
+            "split": "split",
+            "string.space": "string",
+            "lassign": "assign",
+            "rassign": "assign",
+            "special": "special",
+            "comment.start": "comment",
+            "string.start": "string",
+            "token": "token",
+            "comment.notestart": "comment",
+            "comment.blockstart": "comment",
+            "comment.linecomment": "comment",
+            "comment.notebeforeblank": "comment",
+            "comment.note": "comment",
+            "comment.blockend": "comment",
+            "comment.blockcomment": "comment",
+            "string.escape1": "string",
+            "string.end": "string",
+            "string.char": "string",
+            "string.escape2": "string",
+            "lassign_": "assign",
+            "rassign_": "assign",
+        };
+        this.tokenizerstates = ["start", "LF", "comment.LF", "split", "string.space", "lassign", "rassign", "special", "comment.start", "string.start", "token", "comment.notestart", "comment.blockstart", "comment.linecomment", "comment.notebeforeblank", "comment.note", "comment.blockend", "comment.blockcomment", "string.escape1", "string.end", "string.char", "string.escape2", "lassign_", "rassign_"];
+        var sts = this.tokenizerstates;
+        while (i < this.code.length) {
+            switch(state){
+                case 1:
+                    if ((tc[i]=="#")&&(tc[i+1]=="#")) state=3;
+                    else state=0;
+                    break;
+                case 3:
+                    state=4;
+                    break;
+                case 4:
+                    if ((tc[i]==" ")) state=5;
+                    else if ((tc[i]=="\n")) state=6;
+                    else state=7;
+                    break;
+                case 5:
+                    if ((tc[i]==" ")) state=5;
+                    else if ((tc[i]=="\n")) state=6;
+                    else state=7;
+                    break;
+                case 7:
+                    if ((tc[i]=="\n")) state=6;
+                    else state=7;
+                    break;
+                case 6:
+                    state=0;
+            }
+            if (state != 1) {
+                var LineAndCol = this.getLineAndCol(i);
+                //console.log(i,this.code[i].replace(/\n/g,"\\n"),sts[state],state)
+                if (tar.length == 0 || state != tar[tar.length - 1].type || state == 1 || state == 2 || state == 3) {
+                    // @ts-ignore
+                    tar.push({ type: state, type_str: sts[state], val: this.code[i], i: i, line: LineAndCol.line, col: LineAndCol.col, group: this.tokengroup[sts[state]] });
+                }
+                else {
+                    tar[tar.length - 1].val += this.code[i];
+                }
+                if (state==0) {
+                    throw JSON.stringify(tar[tar.length-1])
+                }
+                //console.table(tar)
+                i++;
+            }
+        }
+        console.table(tar);
+        return this;
+    };
+    return NMLtool;
+}());
+// @ts-ignore
+if ((typeof require != "undefined")) {
+    var code_res = new NMLtool("./test4.nml").tokenize();
+    // @ts-ignore
+    code_res.parse();
 }
