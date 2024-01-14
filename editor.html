@@ -1,18 +1,52 @@
 <html>
     <body>
+        <head>
+            <link href="./highlight_tokenizer.css" rel="stylesheet">
+            <link href="./highlight_parser.css" rel="stylesheet">
+            <link href="./jsonviewer.css" rel="stylesheet">
+            <script src="./jsonviewer.js"></script>
+            <meta charset="UTF-8">
+            <meta property="og:title" content="NLP Editor">
+            <meta property="og:description" content="Neknaj Language for Programming のオンラインエディタです。">
+            <meta property="description" content="Neknaj Language for Programming のオンラインエディタです。">
+        </head>
         <main>
-            <textarea id="editor" spellcheck="false">## Neknaj Markup Language v2
+            <textarea id="editor" spellcheck="false" wrap="off" class="spread"># Nekanj Markup Language v2
 
-# About {
-HI, THis is a amarkup language made by Bem130.
+# about
+    hi, this is a markup language made by Bem130
+    
+    # motivation to start making
+        there is some point that i don't like in many lightweight-markup languages
 
-# Motivation to start making {
-in many lightweight markup languages, there are some things that I dom't like.
-}
-}
-# Representations {
-}</textarea>
-            <div id="highlight"><pre></pre></div>
+# features
+    it isn't supporting non-text contents such as image
+    you should use embed blocks to show images
+
+#representations
+    &code:nmlv1
+        # (title)
+        
+        #1 (title1)
+        #2 (title2)
+        #3 (title3)
+        #4 (title4)
+        
+        (text)
+        
+        {url:(url)}
+        {url:(text);(url)}
+        {code:(code)}
+        {alias:(text);(alias);}
+        
+        {{code:(type)
+        (code block)
+        }}
+        {{embed:(type)
+        (embed data)
+        }}
+</textarea>
+            <div id="highlight_tokenizer" class="spread highlight"><pre></pre></div>
         </main>
     </body>
 </html>
@@ -21,10 +55,10 @@ in many lightweight markup languages, there are some things that I dom't like.
 <script>
 
 const editor = document.getElementById("editor");
-var nlpt;
+var nmlt;
 
-function makeHighLight(tokenarr) {
-    let output = document.getElementById("highlight").childNodes[0];
+function makeHighLight_tokenizer(tokenarr,elmId) {
+    let output = document.getElementById(elmId).childNodes[0];
     output.innerHTML = "";
     //console.log(tokenarr)
     {
@@ -37,14 +71,10 @@ function makeHighLight(tokenarr) {
         let span = document.createElement("span");
         output.appendChild(span);
         span.innerText = token.val;
-        if (token.type!=-1) {
-            span.classList.add(token.type_str.split(".").join("_"));
-            if (token.val==" ") {
-                span.classList.add(`space`);
-            }
-        }
-        else {
-            span.classList.add("Error");
+        span.classList.add("tokenizer");
+        span.classList.add(token.ttype_str.split(".").join("_"));
+        if (token.val==" ") {
+            span.classList.add(`space`);
         }
         if (token.val=="\n") {
             span.innerText = "⏎";
@@ -57,75 +87,171 @@ function makeHighLight(tokenarr) {
         }
     }
 }
+function makeHighLight_parser(tokenarr,elmId) {
+    let output = document.getElementById(elmId).childNodes[0];
+    output.innerHTML = "";
+    //console.log(tokenarr)
+    {
+        let linen = document.createElement("span");
+        linen.classList.add("linenumber");
+        linen.innerText = 1;
+        output.appendChild(linen);
+    }
+    for (let token of tokenarr) {
+        let span = document.createElement("span");
+        output.appendChild(span);
+        span.innerText = token.val;
+        if (token.ptype!=null) {
+            span.classList.add("parser");
+            span.classList.add(token.ptype_str.split(".").join("_"));
+            if (token.val==" ") {
+                span.classList.add(`space`);
+            }
+        }
+        else {
+            span.classList.add("parser");
+            span.classList.add("Error");
+            if (token.group=="EOF") {
+                span.classList.add("EOF")
+            }
+        }
+        if (token.val=="\n") {
+            span.classList.add(`LF`);
+            span.innerText = "⏎";
+            let br = document.createElement("br");
+            output.appendChild(br);
+            let linen = document.createElement("span");
+            linen.classList.add("linenumber");
+            linen.innerText = token.line+1;
+            output.appendChild(linen);
+        }
+    }
+}
+function showTable(obj,elm,defaultopen=false) {
+    elm.innerHTML = ""
+    if (!(obj instanceof Array)) {
+        throw `given Object is not Array`;
+        return false;
+    }
+    let index = Object.keys(obj[0])
+    //console.log(index)
+    {
+        let tableelm = document.createElement("table");
+        { // head
+            let trelm = document.createElement("tr");
+            for (let name of index) {
+                let thelm = document.createElement("th");
+                thelm.innerText = name;
+                trelm.appendChild(thelm);
+            }
+            tableelm.appendChild(trelm);
+        }
+        { // body
+            for (let col of obj) {
+                let trelm = document.createElement("tr");
+                for (let name of index) {
+                    //console.log(col,name)
+                    let tdelm = document.createElement("td");
+                    let divelm = document.createElement("div");
+                    showJSON(col[name],divelm,false)
+                    tdelm.appendChild(divelm)
+                    trelm.appendChild(tdelm);
+                }
+                tableelm.appendChild(trelm);
+            }
+        }
+        elm.appendChild(tableelm)
+    }
+}
+
+
 editor.onchange = update;
 //editor.onkeydown = update;
 editor.oninput = update;
 
 update()
 function update() {
-    nlpt = new NMLtool(`data:text/plain;charset=UTF-8;base64,${btoa(String.fromCharCode.apply(null, new TextEncoder().encode(editor.value)))}`);
+    nmlt = new NMLtool(`data:text/plain;charset=UTF-8;base64,${btoa(String.fromCharCode.apply(null, new TextEncoder().encode(editor.value)))}`);
     try {
-        nlpt.parse();
-    }
-    catch (e) {
-        //console.error(e)
-        { // 未解決部分追加
-            if (nlpt.tokenarr.length!=0) {
-                let lastindex = nlpt.tokenarr[nlpt.tokenarr.length-1].i + nlpt.tokenarr[nlpt.tokenarr.length-1].val.length;
-                console.log(lastindex);
-                nlpt.tokenarr.push({ type:-1, type_str:"Error", val: nlpt.code.slice(lastindex), i: lastindex })
-            }
-            else {
-                nlpt.tokenarr.push({ type:-1, type_str:"Error", val: nlpt.code, i: 0 })
-            }
-        }
-    }
-    try {
-        nlpt.parse();
+        nmlt.parseTree_document();
     }
     catch (e) {
         console.error(e)
     }
-    //console.log(nlpt.tokenarr)
-    makeHighLight(nlpt.tokenarr);
-    //console.log(nlpt)
+    // try {
+    //     nmlt.tokenize();
+    // }
+    // catch (e) {
+    //     console.error(e)
+    // }
+    // try {
+    //     nmlt.parse();
+    //     nmlt.buildAST1();
+    // }
+    // catch (e) {
+    //     console.error(e)
+    //     console.info({"nmlt.ast1i":nmlt.ast1i})
+    //     console.log(nmlt.ast1)
+    // }
+    //console.log(nmlt.tokenarr)
+    //console.table(nmlt.tokenarr)
+    makeHighLight_tokenizer(nmlt.tokenarr,"highlight_tokenizer");
+    makeHighLight_parser(nmlt.tokenarr,"highlight_parser");
+    showJSON(nmlt.ast1,document.getElementById("AST1"),true);
+    showTable(nmlt.tokenarr,document.getElementById("tokentable"),false);
+    //console.log(nmlt)
 }
 
 </script>
 <style>
     body {
+        color-scheme: dark;
         background-color: black;
+        color: white;
         height: 100dvh;
         padding: 0;
         margin: 0;
+        font-size: 1.2rem;
     }
     main {
         display: flex;
         height: 100%;
     }
     #editor {
-        width: 100%;
-        font-size: 15px;
+        font-size: 1em;
         background: transparent;
         color: white;
+        outline: none;
         border: none;
+        resize: none;
+        overflow: scroll;
+        line-height: 1.1em;
+        padding-left: 5px;
+    }
+    #libpath {
+        font-size: 1em;
+        background: transparent;
+        color: white;
         outline: none;
         resize: none;
         overflow: scroll;
-        line-height: 20px;
+        padding: 10px;
+        line-height: 1.1em;
+        word-wrap: unset;
+        width: 100%;
     }
-    #highlight {
-        width: calc(100% + 125px);
-        font-size: 15px;
+    .highlight {
+        font-size: 1em;
         font-family: monospace;
         background-color: rgb(0, 4, 26);
         color: white;
         height: 100dvh;
         overflow: scroll;
-        line-height: 18px;
+        line-height: 1.1em;
     }
     .linenumber {
-        font-size: 10px;
+        font-size: 1em;
+        color: rgba(255, 255, 255, 0.6);
         display: inline-block;
         margin: 0;
         margin-right: 10px;
@@ -136,81 +262,58 @@ function update() {
         user-select: none;
         -webkit-user-select: none;
     }
+
+    table {
+        border: rgba(255, 255, 255, 0.3) solid 1px;
+        border-radius: 10px;
+        margin: 5px;
+        padding: 5px;
+        position: relative;
+    }
+    table>tr>th {
+        border: rgba(255, 255, 255, 0.25) solid 1px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 2px;
+        position: sticky;
+        top: 5px;
+        z-index: 1;
+    }
+    table>tr>td {
+        border: rgba(255, 255, 255, 0.2) solid 1px;
+        border-radius: 2px;
+        padding: 2px;
+    }
+
+    .spread {
+        width: 100%;
+        overflow: scroll;
+    }
+    .spread:hover {
+        width: 200%;
+    }
+    .spread_wide {
+        width: 150%;
+        overflow: scroll;
+    }
+    .spread_wide:hover {
+        width: 700%;
+    }
+    .spread p {
+        margin: 2px;
+    }
 </style>
 <style id="highlight_style">
 
-    #highlight pre {
+    .highlight pre {
         margin: 0;
     }
 
-    #highlight span.EOL {
+    .highlight span.EOL {
         color: rgb(135, 135, 135);
     }
-
-    .token {
-        color: rgb(255, 249, 167);
-    }
-    .split {
-        color: rgb(255, 255, 255);
-    }
-    .space {
-        text-decoration: underline wavy rgba(199, 199, 199, 0.3);
-        -webkit-text-decoration: underline wavy rgba(199, 199, 199, 0.3);
-    }
-    .special {
-        color: rgb(92, 168, 255);
-    }
-    .LF {
-        color: gray;
+    
+    .highlight br {
         user-select: none;
         -webkit-user-select: none;
-    }
-    .comment_LF {
-        color: gray;
-        user-select: none;
-        -webkit-user-select: none;
-        text-decoration: underline rgba(55, 186, 92, 0.4);
-        -webkit-text-decoration: underline rgba(55, 186, 92, 0.4);
-    }
-    .comment_start,.comment_blockstart,.comment_blockend, .comment_notestart {
-        color: rgb(0, 153, 0);
-    }
-    .comment_blockcomment, .comment_linecomment {
-        color: rgb(49, 123, 87);
-        text-decoration: underline rgba(55, 186, 92, 0.4);
-        -webkit-text-decoration: underline rgba(55, 186, 92, 0.4);
-    }
-    .comment_note {
-        color: rgb(0, 0, 0);
-        background-color: rgb(255, 248, 206);
-        text-decoration: underline rgba(0, 242, 69, 0.4);
-        -webkit-text-decoration: underline rgba(0, 242, 69, 0.4);
-        border-radius: 3px;
-        padding: 2px;
-    }
-    .comment_notebeforeblank {
-        text-decoration: underline rgba(0, 242, 69, 0.4);
-        -webkit-text-decoration: underline rgba(0, 242, 69, 0.4);
-    }
-
-    .string_start, .string_end {
-        color: rgb(242, 129, 8);
-    }
-    .string_char {
-        color: rgb(255, 188, 64);
-    }
-    .string_space {
-        text-decoration: underline wavy rgba(255, 115, 0, 0.3);
-        -webkit-text-decoration: underline wavy rgba(255, 115, 0, 0.3);
-    }
-    .string_escape1 {
-        color: rgb(181, 154, 21);
-    }
-    .string_escape2 {
-        color: rgb(235, 204, 46);
-    }
-
-    .lassign, .lassign_, .rassign, .rassign_ {
-        color: red;
     }
 </style>
