@@ -8,7 +8,8 @@ function NML_html_document(obj) {
     let elm = document.createElement("div");
     if (obj.type=="document") {
         let h1 = document.createElement("h1");
-        h1.innerText = obj.documenttitle.text;
+        h1.classList.add("documenttitle");
+        NML_html_replace(h1,obj.documenttitle.text);
         elm.appendChild(h1);
         let div = document.createElement("div");
         div.classList.add("document_body");
@@ -26,7 +27,7 @@ function NML_html_nodes(parent,nodes,level) {
                     p.classList.add("paragraph");
                     for (let content of node.contents) {
                         let span = document.createElement("span");
-                        span.innerHTML = NML_html_replace(content.text);
+                        NML_html_replace(span,content.text);
                         p.appendChild(span);
                         let br = document.createElement("br");
                         p.appendChild(br);
@@ -39,7 +40,8 @@ function NML_html_nodes(parent,nodes,level) {
                     let elm = document.createElement("div");
                     elm.classList.add("nmlnode");
                     let title = document.createElement(`h${level+1}`);
-                    title.innerHTML = NML_html_replace(node.nodetitle.text);
+                    title.classList.add("nmlnodetitle");
+                    NML_html_replace(title,node.nodetitle.text);
                     elm.appendChild(title);
                     let div = document.createElement("div");
                     div.classList.add("document_body");
@@ -62,6 +64,13 @@ function NML_html_nodes(parent,nodes,level) {
         }
     }
 }
-function NML_html_replace(str) {
-    return str.replace(/ /g,"&nbsp;");
+function NML_html_replace(p,str) {
+    for (c of str) {
+        let span = document.createElement("span");
+        if (c==" ") {
+            span.classList.add("space")
+        }
+        span.innerHTML = c;
+        p.appendChild(span);
+    }
 }
