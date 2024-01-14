@@ -45,7 +45,7 @@ var NMLtool = (function () {
         console.log(this.code);
         var i = 0;
         var maxIndent = 0;
-        var parseTree = { type: "document", span: [i, this.code.length], documenttitle: null, nodes: null };
+        this.parseTree = { type: "document", span: [i, this.code.length], documenttitle: null, nodes: null };
         if (this.code[0] == "#") {
             if (this.code[1] != " ") {
                 throw "error ".concat(this.getLineAndCol(i).toString(), ": \u30BF\u30A4\u30C8\u30EB\u306E\"#\"\u306E\u5F8C\u308D\u306B\u306F\u7A7A\u767D\u304C\u5FC5\u8981\u3067\u3059");
@@ -74,14 +74,14 @@ var NMLtool = (function () {
                 nodes_text += this.code[i];
                 i++;
             }
-            parseTree.documenttitle = this.parseTree_documenttitle(doctitle_span);
-            parseTree.nodes = this.parseTree_nodes(nodes_span, 0);
+            this.parseTree.documenttitle = this.parseTree_documenttitle(doctitle_span);
+            this.parseTree.nodes = this.parseTree_nodes(nodes_span, 0);
         }
         else {
             throw "error ".concat(this.getLineAndCol(i).toString(), ": \u30C9\u30AD\u30E5\u30E1\u30F3\u30C8\u306E\u30BF\u30A4\u30C8\u30EB\u304C\u3042\u308A\u307E\u305B\u3093");
         }
-        console.log(parseTree);
-        return parseTree;
+        console.log(this.parseTree);
+        return this.parseTree;
     };
     NMLtool.prototype.parseTree_checkIndent = function (i) {
         var flag = true;
@@ -133,7 +133,7 @@ var NMLtool = (function () {
                     while (lineinfo[k][0] == "indents") {
                         k++;
                     }
-                    nodes.push(this.parseTree_nmlnode([lineinfo[j][1], lineinfo[j + 1][1] - 1], [lineinfo[j + 1][1], lineinfo[k][1] - 1], indent));
+                    nodes.push(this.parseTree_nmlnode([lineinfo[j][1] + indent * this.indentSpace, lineinfo[j + 1][1] - 1], [lineinfo[j + 1][1], lineinfo[k][1] - 1], indent));
                     j = k - 1;
                 }
                 else {
@@ -146,7 +146,7 @@ var NMLtool = (function () {
                     while (lineinfo[k][0] == "indents") {
                         k++;
                     }
-                    nodes.push(this.parseTree_block([lineinfo[j][1], lineinfo[j + 1][1] - 1], [lineinfo[j + 1][1], lineinfo[k][1] - 1], indent));
+                    nodes.push(this.parseTree_block([lineinfo[j][1] + indent * this.indentSpace, lineinfo[j + 1][1] - 1], [lineinfo[j + 1][1], lineinfo[k][1] - 1], indent));
                     j = k - 1;
                 }
                 else {
@@ -156,7 +156,7 @@ var NMLtool = (function () {
             if (lineinfo[j][0] == "contents") {
                 var paragraph = { type: "paragraph", span: [lineinfo[j][1], lineinfo[j + 1][1] - 1], contents: [] };
                 while (lineinfo[j][0] == "contents") {
-                    paragraph.contents.push(this.parseTree_content([lineinfo[j][1], lineinfo[j + 1][1] - 1], indent));
+                    paragraph.contents.push(this.parseTree_content([lineinfo[j][1] + indent * this.indentSpace, lineinfo[j + 1][1] - 1], indent));
                     paragraph.span[1] = lineinfo[j + 1][1] - 1;
                     j++;
                 }

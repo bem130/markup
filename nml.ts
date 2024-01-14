@@ -70,6 +70,7 @@ class NMLtool {
     private fRead:Function;
     tokenizerstates:Array<string>;
     indentSpace:number;
+    parseTree:NML_document;
     constructor(filename: string) {
         this.indentSpace = 4; // インデントのスペースの個数
         this.filename = filename;
@@ -120,7 +121,7 @@ class NMLtool {
         console.log(this.code)
         let i:number = 0;
         let maxIndent:number = 0;
-        let parseTree:NML_document ={ type:"document",span:[i,this.code.length],documenttitle:null,nodes:null };
+        this.parseTree ={ type:"document",span:[i,this.code.length],documenttitle:null,nodes:null };
         if (this.code[0]=="#") {
             if (this.code[1]!=" ") { throw `error ${this.getLineAndCol(i).toString()}: タイトルの\"#\"の後ろには空白が必要です` }
             i = 2;
@@ -144,14 +145,14 @@ class NMLtool {
                 nodes_text+=this.code[i];
                 i++;
             }
-            parseTree.documenttitle = this.parseTree_documenttitle(doctitle_span);
-            parseTree.nodes = this.parseTree_nodes(nodes_span,0);
+            this.parseTree.documenttitle = this.parseTree_documenttitle(doctitle_span);
+            this.parseTree.nodes = this.parseTree_nodes(nodes_span,0);
         }
         else {
             throw `error ${this.getLineAndCol(i).toString()}: ドキュメントのタイトルがありません`;
         }
-        console.log(parseTree)
-        return parseTree;
+        console.log(this.parseTree)
+        return this.parseTree;
     }
     parseTree_checkIndent(i:number) {
         let flag = true;
@@ -198,7 +199,7 @@ class NMLtool {
                 let k:number = j+1;
                 if (lineinfo[k][0]=="indents") {
                     while (lineinfo[k][0]=="indents") {k++;}
-                    nodes.push(this.parseTree_nmlnode([lineinfo[j][1],lineinfo[j+1][1]-1],[lineinfo[j+1][1],lineinfo[k][1]-1],indent));
+                    nodes.push(this.parseTree_nmlnode([lineinfo[j][1]+indent*this.indentSpace,lineinfo[j+1][1]-1],[lineinfo[j+1][1],lineinfo[k][1]-1],indent));
                     j = k-1;
                 }
                 else {
@@ -209,7 +210,7 @@ class NMLtool {
                 let k:number = j+1;
                 if (lineinfo[k][0]=="indents") {
                     while (lineinfo[k][0]=="indents") {k++;}
-                    nodes.push(this.parseTree_block([lineinfo[j][1],lineinfo[j+1][1]-1],[lineinfo[j+1][1],lineinfo[k][1]-1],indent));
+                    nodes.push(this.parseTree_block([lineinfo[j][1]+indent*this.indentSpace,lineinfo[j+1][1]-1],[lineinfo[j+1][1],lineinfo[k][1]-1],indent));
                     j = k-1;
                 }
                 else {
@@ -219,7 +220,7 @@ class NMLtool {
             if (lineinfo[j][0]=="contents") {
                 let paragraph:NML_paragraph = {type:"paragraph",span:[lineinfo[j][1],lineinfo[j+1][1]-1],contents:[]};
                 while (lineinfo[j][0]=="contents") {
-                    paragraph.contents.push(this.parseTree_content([lineinfo[j][1],lineinfo[j+1][1]-1],indent));
+                    paragraph.contents.push(this.parseTree_content([lineinfo[j][1]+indent*this.indentSpace,lineinfo[j+1][1]-1],indent));
                     paragraph.span[1] = lineinfo[j+1][1]-1;
                     j++;
                 }

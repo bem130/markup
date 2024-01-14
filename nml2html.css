@@ -1,0 +1,12 @@
+.nmlhtml,.nmlhtml .nmlnode {
+    margin: 5px;
+    padding-left: 20px;
+}
+.nmlhtml .paragraph {
+    margin: 5px;
+}
+.nmlhtml .blockcode_area {
+    font-family: monospace;
+    padding: 5px;
+    background-color: rgb(13, 20, 82);
+}

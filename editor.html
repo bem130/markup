@@ -5,6 +5,7 @@
             <link href="./highlight_parser.css" rel="stylesheet">
             <link href="./jsonviewer.css" rel="stylesheet">
             <script src="./jsonviewer.js"></script>
+            <link href="./nml2html.css" rel="stylesheet">
             <meta charset="UTF-8">
             <meta property="og:title" content="NLP Editor">
             <meta property="og:description" content="Neknaj Language for Programming のオンラインエディタです。">
@@ -12,121 +13,36 @@
         </head>
         <main>
             <textarea id="editor" spellcheck="false" wrap="off" class="spread"># Nekanj Markup Language v2
-
 # about
     hi, this is a markup language made by Bem130
     
     # motivation to start making
         there is some point that i don't like in many lightweight-markup languages
 
-# features
-    it isn't supporting non-text contents such as image
-    you should use embed blocks to show images
-
 #representations
     &code:nmlv1
-        # (title)
-        
-        #1 (title1)
-        #2 (title2)
-        #3 (title3)
-        #4 (title4)
-        
-        (text)
-        
-        {url:(url)}
-        {url:(text);(url)}
-        {code:(code)}
-        {alias:(text);(alias);}
-        
-        {{code:(type)
-        (code block)
-        }}
-        {{embed:(type)
-        (embed data)
-        }}
+        # document title
+        # title
+            body-text
+            # title
+                body-text
+        # title
+            &embed
+                embed-content
 </textarea>
-            <div id="highlight_tokenizer" class="spread highlight"><pre></pre></div>
+            <div id="Tree1" class="spread"></div>
+            <div id="Preview" class="spread"></div>
         </main>
     </body>
 </html>
 
 <script src="nml.js"></script>
+<script src="nml2html.js"></script>
 <script>
 
 const editor = document.getElementById("editor");
 var nmlt;
 
-function makeHighLight_tokenizer(tokenarr,elmId) {
-    let output = document.getElementById(elmId).childNodes[0];
-    output.innerHTML = "";
-    //console.log(tokenarr)
-    {
-        let linen = document.createElement("span");
-        linen.classList.add("linenumber");
-        linen.innerText = 1;
-        output.appendChild(linen);
-    }
-    for (let token of tokenarr) {
-        let span = document.createElement("span");
-        output.appendChild(span);
-        span.innerText = token.val;
-        span.classList.add("tokenizer");
-        span.classList.add(token.ttype_str.split(".").join("_"));
-        if (token.val==" ") {
-            span.classList.add(`space`);
-        }
-        if (token.val=="\n") {
-            span.innerText = "⏎";
-            let br = document.createElement("br");
-            output.appendChild(br);
-            let linen = document.createElement("span");
-            linen.classList.add("linenumber");
-            linen.innerText = token.line+1;
-            output.appendChild(linen);
-        }
-    }
-}
-function makeHighLight_parser(tokenarr,elmId) {
-    let output = document.getElementById(elmId).childNodes[0];
-    output.innerHTML = "";
-    //console.log(tokenarr)
-    {
-        let linen = document.createElement("span");
-        linen.classList.add("linenumber");
-        linen.innerText = 1;
-        output.appendChild(linen);
-    }
-    for (let token of tokenarr) {
-        let span = document.createElement("span");
-        output.appendChild(span);
-        span.innerText = token.val;
-        if (token.ptype!=null) {
-            span.classList.add("parser");
-            span.classList.add(token.ptype_str.split(".").join("_"));
-            if (token.val==" ") {
-                span.classList.add(`space`);
-            }
-        }
-        else {
-            span.classList.add("parser");
-            span.classList.add("Error");
-            if (token.group=="EOF") {
-                span.classList.add("EOF")
-            }
-        }
-        if (token.val=="\n") {
-            span.classList.add(`LF`);
-            span.innerText = "⏎";
-            let br = document.createElement("br");
-            output.appendChild(br);
-            let linen = document.createElement("span");
-            linen.classList.add("linenumber");
-            linen.innerText = token.line+1;
-            output.appendChild(linen);
-        }
-    }
-}
 function showTable(obj,elm,defaultopen=false) {
     elm.innerHTML = ""
     if (!(obj instanceof Array)) {
@@ -195,10 +111,8 @@ function update() {
     // }
     //console.log(nmlt.tokenarr)
     //console.table(nmlt.tokenarr)
-    makeHighLight_tokenizer(nmlt.tokenarr,"highlight_tokenizer");
-    makeHighLight_parser(nmlt.tokenarr,"highlight_parser");
-    showJSON(nmlt.ast1,document.getElementById("AST1"),true);
-    showTable(nmlt.tokenarr,document.getElementById("tokentable"),false);
+    showJSON(nmlt.parseTree,document.getElementById("Tree1"),true,["span","embtype"]);
+    NML_showAsHTML(nmlt.parseTree,document.getElementById("Preview"));
     //console.log(nmlt)
 }
 
