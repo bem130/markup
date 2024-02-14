@@ -81,9 +81,9 @@ function showTable(obj,elm,defaultopen=false) {
 }
 
 
-editor.onchange = update;
-//editor.onkeydown = update;
-editor.oninput = update;
+//editor.onchange = update;
+editor.onkeyup = update;
+//editor.oninput = update;
 
 update()
 function update() {

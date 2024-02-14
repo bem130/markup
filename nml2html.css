@@ -1,12 +1,13 @@
 .nmlhtml {
-    font-family: serif;
     padding-right: 20px;
 }
 .nmlhtml,.nmlhtml .nmlnode {
+    font-family: sans-serif;
     margin: 5px;
     padding-left: 20px;
 }
 .nmlhtml .paragraph {
+    font-family: serif;
     margin: 5px;
 }
 .nmlhtml span.space {
